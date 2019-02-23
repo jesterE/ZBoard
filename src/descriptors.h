@@ -19,5 +19,9 @@ typedef enum {
     ProductString = 2
 } DeviceStringIndex;
 
+#define KEYBOARD_INTERFACE_NUMBER 0
+#define KEYBOARD_ENDPOINT_ADDRESS 1
+#define KEYBOARD_ENDPOINT_SIZE 8
+
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint16_t wIndex, const void **const descriptor_address);
 

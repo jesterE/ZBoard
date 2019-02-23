@@ -57,7 +57,7 @@ const UsbConfigurationDescriptor PROGMEM CONFIGURATION_DESCRIPTOR = {
             .Type = DTYPE_Interface
         },
 
-        .InterfaceNumber = 0,
+        .InterfaceNumber = KEYBOARD_INTERFACE_NUMBER,
         .AlternateSetting = 0x00,
 
         .TotalEndpoints = 1,
@@ -88,9 +88,9 @@ const UsbConfigurationDescriptor PROGMEM CONFIGURATION_DESCRIPTOR = {
             .Type = DTYPE_Endpoint
         },
 
-        .EndpointAddress = ENDPOINT_DIR_IN | 1,
+        .EndpointAddress = ENDPOINT_DIR_IN | KEYBOARD_ENDPOINT_ADDRESS,
         .Attributes = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-        .EndpointSize = 8,
+        .EndpointSize = KEYBOARD_ENDPOINT_SIZE,
         .PollingIntervalMS = 0x05
     }
 };
