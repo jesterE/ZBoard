@@ -60,6 +60,10 @@ bool CALLBACK_HID_Device_CreateHIDReport(
     void *report_data,
     uint16_t *const report_size)
 {
+    (void) hid_state;
+    (void) report_id;
+    (void) report_type;
+
     USB_KeyboardReport_Data_t *keyboard_report = report_data;
     keyboard_report->KeyCode[0] = HID_KEYBOARD_SC_A;
     *report_size = sizeof(USB_KeyboardReport_Data_t);
@@ -73,6 +77,11 @@ void CALLBACK_HID_Device_ProcessHIDReport(
     const void *report_data,
     const uint16_t report_size)
 {
+    (void) hid_state;
+    (void) report_id;
+    (void) report_type;
+    (void) report_size;
+
     const uint8_t *report = report_data;
     if (*report & HID_KEYBOARD_LED_CAPSLOCK) {
         TEENSY2_LED_ON();
