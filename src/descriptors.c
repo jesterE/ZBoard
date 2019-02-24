@@ -88,7 +88,7 @@ const UsbConfigurationDescriptor PROGMEM CONFIGURATION_DESCRIPTOR = {
             .Type = DTYPE_Endpoint
         },
 
-        .EndpointAddress = ENDPOINT_DIR_IN | KEYBOARD_ENDPOINT_ADDRESS,
+        .EndpointAddress = KEYBOARD_ENDPOINT_ADDRESS, 
         .Attributes = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
         .EndpointSize = KEYBOARD_ENDPOINT_SIZE,
         .PollingIntervalMS = 0x05
