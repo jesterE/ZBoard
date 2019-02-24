@@ -35,7 +35,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM KEYBOARD_REPORT[] = {
 const UsbConfigurationDescriptor PROGMEM CONFIGURATION_DESCRIPTOR = {
     .header = {
         .Header = {
-            .Size = sizeof(UsbConfigurationDescriptor), 
+            .Size = sizeof(USB_Descriptor_Configuration_Header_t), 
             .Type = DTYPE_Configuration
         },
 
