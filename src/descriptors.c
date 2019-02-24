@@ -121,17 +121,17 @@ uint16_t CALLBACK_USB_GetDescriptor(
             switch (descriptor_index) {
                 case LanguageString:
                     *descriptor_address = &LANGUAGE_STRING;
-                    return sizeof(LANGUAGE_STRING);
+                    return pgm_read_byte(&LANGUAGE_STRING.Header.Size);
                     break;
 
                 case ManufacturerString:
                     *descriptor_address = &MANUFACTURER_STRING;
-                    return sizeof(MANUFACTURER_STRING);
+                    return pgm_read_byte(&MANUFACTURER_STRING.Header.Size);
                     break;
 
                 case ProductString:
                     *descriptor_address = &PRODUCT_STRING;
-                    return sizeof(PRODUCT_STRING);
+                    return pgm_read_byte(&PRODUCT_STRING.Header.Size);
                     break;
             }
             break;
