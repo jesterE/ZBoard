@@ -1,5 +1,6 @@
 #include "descriptors.h"
 #include "timer_utils.h"
+#include "key_scan.h"
 
 #include <avr/wdt.h>
 #include <avr/power.h>
@@ -41,25 +42,27 @@ int main(void) {
     // disable cpu clock prescaling: run at 16MHz
     clock_prescale_set(clock_div_1);
 
+    setup_pins();
     TEENSY2_ENABLE_LED_OUTPUT();
     USB_Init();
+
+    bool pressed_keys[NUM_COLUMNS][NUM_ROWS] = {false};
 
     // set timer0 clock prescaler to divide by 1024
     // 1 tick = 64us
     TCCR0B |= (0b101);
 
     sei();
-
-    uint8_t ticks = 0;
     while (1) {
-        if (TCNT0 >= TIMER0_VALUE_MS(15, TIMER0_PRESCALE)) {
-            if (ticks >= 10) {
-                TEENSY2_LED_TOGGLE();
-                ticks = 0;
-            } else {
-                ticks++;
-            }
+        if (TCNT0 >= TIMER0_VALUE_MS(5, TIMER0_PRESCALE)) {
+            scan_keys(&pressed_keys);
             TCNT0 = 0;
+        }
+
+        if (pressed_keys[0][0]) {
+            TEENSY2_LED_ON();
+        } else {
+            TEENSY2_LED_OFF();
         }
 
         HID_Device_USBTask(&keyboard_hid_state);
@@ -111,9 +114,9 @@ void CALLBACK_HID_Device_ProcessHIDReport(
 
     const uint8_t *report = report_data;
     if (*report & HID_KEYBOARD_LED_CAPSLOCK) {
-        TEENSY2_LED_ON();
+        //TEENSY2_LED_ON();
     } else {
-        TEENSY2_LED_OFF();
+        //TEENSY2_LED_OFF();
     }
 }
 
