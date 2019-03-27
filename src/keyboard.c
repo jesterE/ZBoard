@@ -1,6 +1,7 @@
 #include "descriptors.h"
 #include "timer_utils.h"
 #include "key_scan.h"
+#include "key_map.h"
 
 #include <avr/wdt.h>
 #include <avr/power.h>
@@ -38,6 +39,8 @@ static USB_ClassInfo_HID_Device_t keyboard_hid_state = {
     }
 };
 
+static bool pressed_keys[NUM_COLUMNS][NUM_ROWS];
+
 int main(void) {
     // disable cpu clock prescaling: run at 16MHz
     clock_prescale_set(clock_div_1);
@@ -45,8 +48,6 @@ int main(void) {
     setup_pins();
     TEENSY2_ENABLE_LED_OUTPUT();
     USB_Init();
-
-    bool pressed_keys[NUM_COLUMNS][NUM_ROWS] = {false};
 
     // set timer0 clock prescaler to divide by 1024
     // 1 tick = 64us
@@ -57,12 +58,6 @@ int main(void) {
         if (TCNT0 >= TIMER0_VALUE_MS(5, TIMER0_PRESCALE)) {
             scan_keys(&pressed_keys);
             TCNT0 = 0;
-        }
-
-        if (pressed_keys[0][0]) {
-            TEENSY2_LED_ON();
-        } else {
-            TEENSY2_LED_OFF();
         }
 
         HID_Device_USBTask(&keyboard_hid_state);
@@ -95,7 +90,27 @@ bool CALLBACK_HID_Device_CreateHIDReport(
     (void) report_type;
 
     USB_KeyboardReport_Data_t *keyboard_report = report_data;
-    keyboard_report->KeyCode[0] = HID_KEYBOARD_SC_A;
+
+    uint8_t keys_in_report = 0;
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {
+        for (uint8_t col = 0; col < NUM_COLUMNS; col++) {
+            if (pressed_keys[col][row]) {
+
+                keyboard_report->KeyCode[keys_in_report] = get_scancode(col, row);
+
+                // Currently only supports sending maximum of 6 keys.
+                // Changing this requires modifying the HID descriptor,
+                // as well as only conditionally enabling the boot protocol
+                // (because the boot protocol only supports a max of 6 keys)
+                keys_in_report++;
+                if (keys_in_report >= 6) {
+                    goto end;
+                }
+            }
+        }
+    }
+
+end:
     *report_size = sizeof(USB_KeyboardReport_Data_t);
     return false;
 }
@@ -114,9 +129,9 @@ void CALLBACK_HID_Device_ProcessHIDReport(
 
     const uint8_t *report = report_data;
     if (*report & HID_KEYBOARD_LED_CAPSLOCK) {
-        //TEENSY2_LED_ON();
+        TEENSY2_LED_ON();
     } else {
-        //TEENSY2_LED_OFF();
+        TEENSY2_LED_OFF();
     }
 }
 
