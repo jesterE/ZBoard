@@ -91,27 +91,13 @@ bool CALLBACK_HID_Device_CreateHIDReport(
 
     USB_KeyboardReport_Data_t *keyboard_report = report_data;
 
-    uint8_t keys_in_report = 0;
-    for (uint8_t row = 0; row < NUM_ROWS; row++) {
-        for (uint8_t col = 0; col < NUM_COLUMNS; col++) {
-            if (pressed_keys[col][row]) {
-
-                keyboard_report->KeyCode[keys_in_report] = get_scancode(col, row);
-
-                // Currently only supports sending maximum of 6 keys.
-                // Changing this requires modifying the HID descriptor,
-                // as well as only conditionally enabling the boot protocol
-                // (because the boot protocol only supports a max of 6 keys)
-                keys_in_report++;
-                if (keys_in_report >= 6) {
-                    goto end;
-                }
-            }
-        }
-    }
-
-end:
+    // Currently only supports sending maximum of 6 keys.
+    // Changing this requires modifying the HID descriptor,
+    // as well as only conditionally enabling the boot protocol
+    // (because the boot protocol only supports a max of 6 keys)
+    get_scancodes(&pressed_keys, keyboard_report->KeyCode, 6);
     *report_size = sizeof(USB_KeyboardReport_Data_t);
+
     return false;
 }
 
